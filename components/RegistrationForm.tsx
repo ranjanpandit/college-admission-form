@@ -4,6 +4,21 @@ import { Key, useState } from "react";
 import data from "../data/registration.json";
 import { Icon } from "@iconify/react";
 
+export interface Field {
+  name: string;
+  label: string;
+  type: string;
+  required?: boolean;
+
+  options?: string[];
+
+  pattern?: string;
+  patternMessage?: string;
+
+  min?: number;
+  max?: number;
+}
+
 export default function RegistrationForm() {
   const tabs = data.tabs;
   const [activeIndex, setActiveIndex] = useState(0);
@@ -24,8 +39,8 @@ export default function RegistrationForm() {
     const currentFields = tabs[activeIndex].fields;
     const newErrors: Record<string, string> = {};
 
-    currentFields.forEach((f: { required: any; name: string | number; label: any; pattern: string | RegExp; patternMessage: string; type: string; min: number; max: number; }) => {
-      if (f.required && !form[f.name]) {
+    currentFields.forEach((f: Field) => {
+    if (f.required && !form[f.name]) {
         newErrors[f.name] = `${f.label} is required`;
       }
       // Optional: pattern validation
