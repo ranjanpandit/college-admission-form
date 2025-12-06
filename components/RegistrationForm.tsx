@@ -24,7 +24,7 @@ export default function RegistrationForm() {
     const currentFields = tabs[activeIndex].fields;
     const newErrors: Record<string, string> = {};
 
-    currentFields.forEach(f => {
+    currentFields.forEach((f: { required: any; name: string | number; label: any; pattern: string | RegExp; patternMessage: string; type: string; min: number; max: number; }) => {
       if (f.required && !form[f.name]) {
         newErrors[f.name] = `${f.label} is required`;
       }
