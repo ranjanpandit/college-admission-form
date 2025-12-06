@@ -1,0 +1,16 @@
+import './globals.css'
+import { FC, PropsWithChildren } from 'react'
+
+const RootLayout: FC<PropsWithChildren> = ({ children }) => {
+  return (
+    <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Colorful Registration</title>
+      </head>
+      <body>{children}</body>
+    </html>
+  )
+}
+
+export default RootLayout

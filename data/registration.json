@@ -1,0 +1,61 @@
+{
+  "tabs": [
+    {
+      "id": "personal",
+      "title": "Personal Info",
+      "icon": "mdi:account",
+      "fields": [
+        { "name": "firstName", "label": "First Name", "type": "text", "required": true },
+        { "name": "lastName", "label": "Last Name", "type": "text", "required": true },
+        { "name": "gender", "label": "Gender", "type": "select", "options": ["Male", "Female", "Other"], "required": true },
+        { "name": "dob", "label": "Date of Birth", "type": "date", "required": true },
+        { "name": "bloodGroup", "label": "Blood Group", "type": "select", "options": ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"] }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "Contact Info",
+      "icon": "mdi:phone",
+      "fields": [
+        { "name": "email", "label": "Email", "type": "email", "required": true, "pattern": "^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$", "patternMessage": "Enter a valid email" },
+        { "name": "phone", "label": "Mobile Number", "type": "text", "required": true, "pattern": "^[0-9]{10}$", "patternMessage": "Enter a 10-digit number" },
+        { "name": "address", "label": "Address", "type": "textarea", "required": true },
+        { "name": "city", "label": "City", "type": "text" },
+        { "name": "state", "label": "State", "type": "text" },
+        { "name": "country", "label": "Country", "type": "text" }
+      ]
+    },
+    {
+      "id": "education",
+      "title": "Education",
+      "icon": "mdi:school",
+      "fields": [
+        { "name": "highestQualification", "label": "Highest Qualification", "type": "select", "options": ["10th", "12th", "Diploma", "Graduate", "Post Graduate"], "required": true },
+        { "name": "board", "label": "Board/University", "type": "text", "required": true },
+        { "name": "passingYear", "label": "Year of Passing", "type": "number", "min": 1900, "max": 2100 },
+        { "name": "percentage", "label": "Percentage/CGPA", "type": "text", "pattern": "^\\d{1,2}(\\.\\d{1,2})?$", "patternMessage": "Enter a valid percentage" }
+      ]
+    },
+    {
+      "id": "parents",
+      "title": "Parents Info",
+      "icon": "mdi:account-group",
+      "fields": [
+        { "name": "fatherName", "label": "Father's Name", "type": "text" },
+        { "name": "fatherOccupation", "label": "Father's Occupation", "type": "text" },
+        { "name": "motherName", "label": "Mother's Name", "type": "text" },
+        { "name": "motherOccupation", "label": "Mother's Occupation", "type": "text" }
+      ]
+    },
+    {
+      "id": "documents",
+      "title": "Documents",
+      "icon": "mdi:folder-upload",
+      "fields": [
+        { "name": "photo", "label": "Passport Photo", "type": "file", "required": true, "accept": "image/*" },
+        { "name": "marksheet", "label": "Marksheet (PDF)", "type": "file", "accept": ".pdf" },
+        { "name": "idProof", "label": "ID Proof (PDF)", "type": "file", "accept": ".pdf" }
+      ]
+    }
+  ]
+}
