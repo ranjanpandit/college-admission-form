@@ -84,8 +84,8 @@ export default function Home() {
                   key={i}
                   className="bg-white p-6 rounded-xl shadow hover:shadow-lg transition"
                 >
-                  <h3 className="text-xl font-semibold">{course.name}</h3>
-                  <p className="mt-3 text-gray-50">{course.desc}</p>
+                  <h3 className="text-xl text-gray-700 font-semibold">{course.name}</h3>
+                  <p className="mt-3 text-gray-600">{course.desc}</p>
                 </div>
               ))}
             </div>
@@ -103,7 +103,7 @@ export default function Home() {
             ].map(([value, label], i) => (
               <div key={i} className="p-6 shadow rounded-xl bg-gray-50">
                 <h3 className="text-4xl font-bold text-blue-700">{value}</h3>
-                <p className="text-gray-50 mt-2">{label}</p>
+                <p className="text-gray-600 mt-2">{label}</p>
               </div>
             ))}
           </div>
@@ -116,7 +116,7 @@ export default function Home() {
           </h2>
 
           <div className="bg-blue-50 p-10 rounded-xl shadow-md">
-            <p className="text-lg text-gray-100 leading-relaxed">
+            <p className="text-lg text-gray-700 leading-relaxed">
               “Education is not just about acquiring knowledge, but about
               empowering oneself to create a meaningful impact in society. At
               ABC College, we focus on holistic development, preparing students
@@ -141,8 +141,8 @@ export default function Home() {
                 ["Sports Complex", "Cricket, football, indoor games & more."],
               ].map(([title, desc], i) => (
                 <div className="bg-white p-6 rounded-xl shadow" key={i}>
-                  <h3 className="text-xl font-bold">{title}</h3>
-                  <p className="mt-2 text-gray-50">{desc}</p>
+                  <h3 className="text-xl text-gray-500 font-bold">{title}</h3>
+                  <p className="mt-2 text-gray-600">{desc}</p>
                 </div>
               ))}
             </div>
@@ -156,13 +156,13 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-white p-6 shadow rounded-xl">
               <h3 className="text-xl font-semibold">Annual Tech Fest 2026</h3>
-              <p className="text-gray-100 mt-2">
+              <p className="text-gray-700 mt-2">
                 Competitions, Hackathons, Tech Talks & Prizes.
               </p>
             </div>
             <div className="bg-white p-6 shadow rounded-xl">
               <h3 className="text-xl font-semibold">Admissions Open 2026</h3>
-              <p className="text-gray-100 mt-2">
+              <p className="text-gray-700 mt-2">
                 Apply now for undergraduate and postgraduate programs.
               </p>
             </div>
