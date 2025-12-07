@@ -24,7 +24,7 @@ export default function Courses() {
             },
           ].map((course, index) => (
             <div className="p-6 shadow-md bg-white rounded-xl" key={index}>
-              <h3 className="text-2xl font-semibold">{course.title}</h3>
+              <h3 className="text-2xl text-gray-500 font-semibold">{course.title}</h3>
               <p className="text-gray-600 mt-2">{course.desc}</p>
             </div>
           ))}
