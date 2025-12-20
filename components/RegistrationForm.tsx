@@ -1,46 +1,71 @@
-'use client'
+"use client";
 
-import { Key, useState } from "react";
-import data from "../data/registration.json";
+import { Key, useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
+import { useParams } from "next/navigation";
+import { toast } from "sonner";
+
 
 export interface Field {
   name: string;
   label: string;
   type: string;
   required?: boolean;
-
   options?: string[];
-
   pattern?: string;
   patternMessage?: string;
-
   min?: number;
   max?: number;
+  accept?: string;
 }
 
 export default function RegistrationForm() {
-  const tabs = data.tabs;
+  const { id } = useParams(); // ID from URL: /student-form/1
+  const [tabs, setTabs] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [form, setForm] = useState<Record<string, any>>({});
   const [preview, setPreview] = useState(false);
   const [profilePic, setProfilePic] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+    useEffect(() => {
+      async function loadForm() {
+        const API = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+        const res = await fetch(`${API}/forms/1`, {
+          cache: "no-store",
+        });
+
+        const form = await res.json();
+        setTabs(form.tabs);
+      }
+
+      loadForm();
+    }, [id]);
+
+
+  if (tabs.length === 0) {
+    return (
+      <main className="min-h-screen flex items-center justify-center text-white">
+        Loading admission form...
+      </main>
+    );
+  }
+
   const handleChange = (name: string, value: any) => {
-    setForm(prev => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ ...prev, [name]: value }));
     if (name === "photo" && value) setProfilePic(URL.createObjectURL(value));
 
     // clear error when user enters value
-    setErrors(prev => ({ ...prev, [name]: "" }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const validateTab = () => {
-    const currentFields = tabs[activeIndex].fields;
+    const currentFields = tabs[activeIndex]?.fields;
     const newErrors: Record<string, string> = {};
 
     currentFields.forEach((f: Field) => {
-    if (f.required && !form[f.name]) {
+      if (f.required && !form[f.name]) {
         newErrors[f.name] = `${f.label} is required`;
       }
       // Optional: pattern validation
@@ -52,8 +77,10 @@ export default function RegistrationForm() {
       }
       // Optional: min/max for numbers
       if ((f.type === "number" || f.type === "date") && form[f.name]) {
-        if (f.min && form[f.name] < f.min) newErrors[f.name] = `${f.label} should be >= ${f.min}`;
-        if (f.max && form[f.name] > f.max) newErrors[f.name] = `${f.label} should be <= ${f.max}`;
+        if (f.min && form[f.name] < f.min)
+          newErrors[f.name] = `${f.label} should be >= ${f.min}`;
+        if (f.max && form[f.name] > f.max)
+          newErrors[f.name] = `${f.label} should be <= ${f.max}`;
       }
     });
 
@@ -62,9 +89,9 @@ export default function RegistrationForm() {
   };
 
   const next = () => {
-    if (validateTab()) setActiveIndex(i => Math.min(i + 1, tabs.length - 1));
+    if (validateTab()) setActiveIndex((i) => Math.min(i + 1, tabs.length - 1));
   };
-  const prev = () => setActiveIndex(i => Math.max(i - 1, 0));
+  const prev = () => setActiveIndex((i) => Math.max(i - 1, 0));
 
   const onSubmit = (e: any) => {
     e.preventDefault();
@@ -78,21 +105,30 @@ export default function RegistrationForm() {
     return (
       <div key={field.name} className="mb-5">
         <label className="block text-gray-100 font-semibold mb-2">
-          {field.label}{field.required ? " *" : ""}
+          {field.label}
+          {field.required ? " *" : ""}
         </label>
-        <div className={`flex items-center gap-3 bg-white/5 backdrop-blur-sm border rounded-xl p-3 
-          ${errorMsg ? "border-red-500" : "border-white/20"}`}>
-          {field.icon && <Icon icon={field.icon} className="text-gray-300 text-xl" />}
+        <div
+          className={`flex items-center gap-3 bg-white/5 backdrop-blur-sm border rounded-xl p-3 
+          ${errorMsg ? "border-red-500" : "border-white/20"}`}
+        >
+          {field.icon && (
+            <Icon icon={field.icon} className="text-gray-300 text-xl" />
+          )}
 
           {field.type === "select" ? (
             <select
               className="bg-white/10 text-gray-100 border-none outline-none w-full appearance-none px-3 py-2 rounded-lg"
               value={value}
-              onChange={e => handleChange(field.name, e.target.value)}
+              onChange={(e) => handleChange(field.name, e.target.value)}
             >
-              <option value="" className="text-gray-500">Select...</option>
+              <option value="" className="text-gray-500">
+                Select...
+              </option>
               {field.options?.map((o: any, i: number) => (
-                <option key={i} value={o} className="text-gray-900">{o}</option>
+                <option key={i} value={o} className="text-gray-900">
+                  {o}
+                </option>
               ))}
             </select>
           ) : field.type === "textarea" ? (
@@ -100,7 +136,7 @@ export default function RegistrationForm() {
               className="bg-white/10 text-gray-100 border-none outline-none w-full resize-none"
               rows={3}
               value={value}
-              onChange={e => handleChange(field.name, e.target.value)}
+              onChange={(e) => handleChange(field.name, e.target.value)}
             />
           ) : field.type === "file" ? (
             <>
@@ -108,7 +144,9 @@ export default function RegistrationForm() {
                 type="file"
                 accept={field.name === "photo" ? "image/*" : ".pdf"}
                 className="bg-white/10 text-gray-100 border-none outline-none w-full cursor-pointer"
-                onChange={(e: any) => handleChange(field.name, e.target.files?.[0])}
+                onChange={(e: any) =>
+                  handleChange(field.name, e.target.files?.[0])
+                }
               />
               {field.name === "photo" && profilePic && (
                 <img
@@ -123,7 +161,7 @@ export default function RegistrationForm() {
               type={field.type}
               className="bg-white/10 text-gray-100 border-none outline-none w-full"
               value={value}
-              onChange={e => handleChange(field.name, e.target.value)}
+              onChange={(e) => handleChange(field.name, e.target.value)}
             />
           )}
         </div>
@@ -133,42 +171,41 @@ export default function RegistrationForm() {
   };
 
   const handleConfirm = async () => {
-    try {
-      alert("Form submitted successfully!");
-      return true;
-      const formData = new FormData();
-      Object.keys(form).forEach(key => {
-        const value = form[key];
-        if (value instanceof File) formData.append(key, value);
-        else formData.append(key, value);
-      });
+  try {
+    const payload = {
+      formId: 1, // dynamic ID from URL or props
+      studentId: null, // optionally pass logged-in user ID
+      data: form,
+    };
 
-      const res = await fetch("https://your-backend.com/api/admissions", {
-        method: "POST",
-        body: formData
-      });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/form-responses`, {
+      method: "POST",
+      headers: { 
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
-      if (!res.ok) throw new Error("Failed to submit form");
-      const result = await res.json();
+    if (!res.ok) throw new Error("Failed to submit");
 
-      alert("Form submitted successfully!");
-      console.log("Backend response:", result);
+    toast.success("Form submitted successfully!");
 
-      setForm({});
-      setProfilePic("");
-      setPreview(false);
+    setForm({});
+    setProfilePic("");
+    setPreview(false);
+  } catch (err) {
+   toast.error(err?.message || "Submission failed");
+  }
+};
 
-    } catch (err: any) {
-      console.error(err);
-      alert(err.message || "Submission failed");
-    }
-  };
 
   if (preview) {
     return (
       <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-700">
         <div className="w-full max-w-3xl glass p-8">
-          <h2 className="text-3xl font-bold text-gray-100 mb-6 text-center">Preview Submission</h2>
+          <h2 className="text-3xl font-bold text-gray-100 mb-6 text-center">
+            Preview Submission
+          </h2>
 
           {profilePic && (
             <div className="flex justify-center mb-6">
@@ -181,8 +218,11 @@ export default function RegistrationForm() {
           )}
 
           <div className="space-y-4">
-            {Object.keys(form).map(key => (
-              <div key={key} className="p-3 bg-white/5 rounded-lg flex justify-between">
+            {Object.keys(form).map((key) => (
+              <div
+                key={key}
+                className="p-3 bg-white/5 rounded-lg flex justify-between"
+              >
                 <span className="text-gray-300 font-medium">{key}</span>
                 <span className="text-gray-100 font-semibold">
                   {form[key]?.name || form[key]}
@@ -213,14 +253,18 @@ export default function RegistrationForm() {
   return (
     <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-700">
       <div className="w-full max-w-4xl glass p-8">
-        <h2 className="text-4xl font-bold text-gray-100 mb-6 text-center">Admission Form</h2>
+        <h2 className="text-4xl font-bold text-gray-100 mb-6 text-center">
+          Admission Form
+        </h2>
 
         {/* Stepper */}
         <div className="flex justify-center items-center mb-6 gap-2">
           {tabs.map((_: any, idx: Key | null | undefined) => (
             <div
               key={idx}
-              className={`w-3 h-3 rounded-full transition-all ${activeIndex === idx ? "bg-blue-500 scale-110" : "bg-gray-500/40"}`}
+              className={`w-3 h-3 rounded-full transition-all ${
+                activeIndex === idx ? "bg-blue-500 scale-110" : "bg-gray-500/40"
+              }`}
             ></div>
           ))}
         </div>
