@@ -34,6 +34,7 @@ export default function RegistrationForm() {
 
         const res = await fetch(`${API}/forms/1`, {
           cache: "no-store",
+          credentials: "include",
         });
 
         const form = await res.json();
