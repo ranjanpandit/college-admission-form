@@ -194,7 +194,7 @@ export default function RegistrationForm() {
     setProfilePic("");
     setPreview(false);
   } catch (err) {
-   toast.error(err?.message || "Submission failed");
+   toast.error( "Submission failed");
   }
 };
 
@@ -288,7 +288,7 @@ export default function RegistrationForm() {
         </div>
 
         <form onSubmit={onSubmit}>
-          {tabs[activeIndex].fields.map((f: any) => renderField(f))}
+          {(tabs[activeIndex] as any)?.fields.map((f: any) => renderField(f))}
 
           <div className="flex justify-between mt-6">
             {activeIndex > 0 && (
