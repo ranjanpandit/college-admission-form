@@ -61,7 +61,7 @@ export default function RegistrationForm() {
   };
 
   const validateTab = () => {
-    const currentFields = tabs[activeIndex]?.fields;
+    const currentFields = (tabs[activeIndex] as any)?.fields;
     const newErrors: Record<string, string> = {};
 
     currentFields.forEach((f: Field) => {
