@@ -53,9 +53,9 @@ export default function RegistrationForm() {
     );
   }
 
-  const handleChange = (name: string, value: any) => {
+  const handleChange = (name: string, value: any,accept: string | null) => {
     setForm((prev) => ({ ...prev, [name]: value }));
-    if (name === "photo" && value) setProfilePic(URL.createObjectURL(value));
+    if (accept === "image/*" && value) setProfilePic(URL.createObjectURL(value));
 
     // clear error when user enters value
     setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -121,7 +121,7 @@ export default function RegistrationForm() {
             <select
               className="bg-white/10 text-gray-100 border-none outline-none w-full appearance-none px-3 py-2 rounded-lg"
               value={value}
-              onChange={(e) => handleChange(field.name, e.target.value)}
+              onChange={(e) => handleChange(field.name, e.target.value,'')}
             >
               <option value="" className="text-gray-500">
                 Select...
@@ -137,19 +137,19 @@ export default function RegistrationForm() {
               className="bg-white/10 text-gray-100 border-none outline-none w-full resize-none"
               rows={3}
               value={value}
-              onChange={(e) => handleChange(field.name, e.target.value)}
+              onChange={(e) => handleChange(field.name, e.target.value,'')}
             />
           ) : field.type === "file" ? (
             <>
               <input
                 type="file"
-                accept={field.name === "photo" ? "image/*" : ".pdf"}
+                accept={field.accept || ".pdf"}
                 className="bg-white/10 text-gray-100 border-none outline-none w-full cursor-pointer"
                 onChange={(e: any) =>
-                  handleChange(field.name, e.target.files?.[0])
+                  handleChange(field.name, e.target.files?.[0],field?.accept)
                 }
               />
-              {field.name === "photo" && profilePic && (
+              {field.accept === "image/*" && profilePic && (
                 <img
                   src={profilePic}
                   alt="Profile Preview"
@@ -162,7 +162,7 @@ export default function RegistrationForm() {
               type={field.type}
               className="bg-white/10 text-gray-100 border-none outline-none w-full"
               value={value}
-              onChange={(e) => handleChange(field.name, e.target.value)}
+              onChange={(e) => handleChange(field.name, e.target.value,'')}
             />
           )}
         </div>
@@ -173,32 +173,38 @@ export default function RegistrationForm() {
 
   const handleConfirm = async () => {
   try {
-    const payload = {
-      formId: 1, // dynamic ID from URL or props
-      studentId: null, // optionally pass logged-in user ID
-      data: form,
-    };
+    const formData = new FormData();
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/form-responses`, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
+    formData.append("formId", "1");
+    if (id) formData.append("studentId", id.toString());
+
+    Object.entries(form).forEach(([key, value]: any) => {
+      if (value instanceof File) {
+        formData.append(key, value); // ✅ file
+      } else {
+        formData.append(key, value); // ✅ text
+      }
     });
+
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/form-responses`,
+      {
+        method: "POST",
+        body: formData, // ❌ NO content-type
+
+      }
+    );
 
     if (!res.ok) throw new Error("Failed to submit");
 
-    toast.success("Form submitted successfully!");
-
+    toast.success("Form submitted successfully");
     setForm({});
     setProfilePic("");
     setPreview(false);
   } catch (err) {
-   toast.error( "Submission failed");
+    toast.error("Submission failed");
   }
 };
-
 
   if (preview) {
     return (
