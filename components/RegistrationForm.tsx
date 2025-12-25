@@ -4,6 +4,8 @@ import { Key, useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
+import { FORM_THEMES } from "../lib/formThemes";
+
 
 
 export interface Field {
@@ -27,27 +29,35 @@ export default function RegistrationForm() {
   const [preview, setPreview] = useState(false);
   const [profilePic, setProfilePic] = useState<string>("");
   const [errors, setErrors] = useState<Record<string, string>>({});
-
+  const [formId,setFormId] = useState(id || 1)
+  const [theme,setTheme] = useState(FORM_THEMES.default)
+  
     useEffect(() => {
       async function loadForm() {
         const API = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-        const res = await fetch(`${API}/forms/1`, {
+        const res = await fetch(`${API}/forms/${formId}`, {
           cache: "no-store",
           credentials: "include",
         });
 
         const form = await res.json();
         setTabs(form.tabs);
+        console.log(form)
+        if (form.theme && FORM_THEMES[form.theme]) {
+          setTheme(FORM_THEMES[form.theme]);
+        } else {
+          setTheme(FORM_THEMES.default);
+        }
       }
 
       loadForm();
-    }, [id]);
+    }, [formId]);
 
 
   if (tabs.length === 0) {
     return (
-      <main className="min-h-screen flex items-center justify-center text-white">
+      <main className={`min-h-screen flex items-center justify-center p-6 ${theme.background} ${theme.text}`}>
         Loading admission form...
       </main>
     );
@@ -175,23 +185,29 @@ export default function RegistrationForm() {
   try {
     const formData = new FormData();
 
-    formData.append("formId", "1");
-    if (id) formData.append("studentId", id.toString());
+    formData.append("formId", formId.toString());
+    // if (formId) formData.append("studentId", formId.toString());
 
-    Object.entries(form).forEach(([key, value]: any) => {
-      if (value instanceof File) {
-        formData.append(key, value); // ✅ file
-      } else {
-        formData.append(key, value); // ✅ text
-      }
+    // 🔑 IMPORTANT: loop through tabs + fields (not form object)
+    tabs.forEach((tab: any) => {
+      tab.fields.forEach((field: any) => {
+        const value = form[field.name];
+
+        if (value === undefined || value === null) return;
+
+        if (value instanceof File) {
+          formData.append(field.name, value);
+        } else {
+          formData.append(field.name, value);
+        }
+      });
     });
 
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/form-responses`,
       {
         method: "POST",
-        body: formData, // ❌ NO content-type
-
+        body: formData,
       }
     );
 
@@ -206,9 +222,10 @@ export default function RegistrationForm() {
   }
 };
 
+
   if (preview) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-700">
+      <main   className={`min-h-screen flex items-center justify-center p-6 ${theme.background} ${theme.text}`}>
         <div className="w-full max-w-3xl glass p-8">
           <h2 className="text-3xl font-bold text-gray-100 mb-6 text-center">
             Preview Submission
@@ -258,7 +275,7 @@ export default function RegistrationForm() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-6 bg-gradient-to-tr from-gray-900 via-gray-800 to-gray-700">
+    <main   className={`min-h-screen flex items-center justify-center p-6 ${theme.background} ${theme.text}`}>
       <div className="w-full max-w-4xl glass p-8">
         <h2 className="text-4xl font-bold text-gray-100 mb-6 text-center">
           Admission Form
