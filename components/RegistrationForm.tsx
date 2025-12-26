@@ -103,7 +103,24 @@ export default function RegistrationForm() {
 
     loadForm();
   }, [formId]);
-
+  if (tabs.length === 0) {
+    return (
+      <main
+        style={
+          {
+            "--bg": theme.background,
+            "--card": theme.card,
+            "--primary": theme.primary,
+            "--button": theme.button,
+            "--text": theme.text,
+          } as React.CSSProperties
+        }
+        className="min-h-screen flex items-center justify-center p-6 bg-[var(--bg)] text-[var(--text)]"
+      >
+        Loading admission form...
+      </main>
+    );
+  }
   /* ----------------------------------------
      FIELD CHANGE
   ---------------------------------------- */
